@@ -1,112 +1,74 @@
 'use client';
 
 import React from 'react';
-import { Activity, Twitter, Linkedin, Github, Mail, Phone, MapPin, Globe } from 'lucide-react';
+import { Eye, ShieldAlert, Heart, Lock } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-navy-950 text-white border-t border-gray-800 pt-16 pb-12">
+    <footer className="bg-slate-900 text-white pt-12 pb-24 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-gray-800">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-slate-800">
           
-          {/* Brand & Mission Column */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center text-white shadow-emerald-glow">
-                <Activity className="w-5 h-5 stroke-[2.5]" />
+          {/* Brand Col */}
+          <div className="md:col-span-5 flex flex-col items-start">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                <Eye className="w-5 h-5" />
               </div>
-              <div className="flex flex-col">
-                <span className="font-bold text-lg text-white tracking-tight leading-none">
-                  Arogya Drishti
-                </span>
-                <span className="text-[10px] font-medium text-emerald-400 tracking-wider uppercase mt-0.5">
-                  AI Healthcare Platform
-                </span>
-              </div>
+              <span className="font-extrabold text-lg text-white tracking-tight">
+                Arogya Drishti
+              </span>
+              <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                AI NEONATAL VISION
+              </span>
             </div>
-
-            <p className="text-gray-400 text-sm leading-relaxed max-w-sm font-normal">
-              Arogya Drishti is pioneering AI-driven healthcare solutions for rural and underserved communities. Empowering clinicians and ANMs with offline disease prediction, maternal care telemetry, and voice assistant tools.
+            <p className="text-xs text-slate-400 max-w-sm leading-relaxed mb-4">
+              Contactless intelligence for every newborn in the NICU. Replaces invasive wires with 10 Hz rPPG computer vision telemetry.
             </p>
-
-            <div className="flex items-center gap-3 pt-2">
-              <a href="#" className="w-9 h-9 rounded-full bg-gray-900 hover:bg-emerald-500 text-gray-400 hover:text-white flex items-center justify-center transition-colors">
-                <Twitter className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-9 h-9 rounded-full bg-gray-900 hover:bg-emerald-500 text-gray-400 hover:text-white flex items-center justify-center transition-colors">
-                <Linkedin className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-9 h-9 rounded-full bg-gray-900 hover:bg-emerald-500 text-gray-400 hover:text-white flex items-center justify-center transition-colors">
-                <Github className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-9 h-9 rounded-full bg-gray-900 hover:bg-emerald-500 text-gray-400 hover:text-white flex items-center justify-center transition-colors">
-                <Globe className="w-4 h-4" />
-              </a>
+            <div className="inline-flex items-center gap-2 text-[10px] font-mono text-amber-400 bg-slate-950 px-3 py-1 rounded-md border border-slate-800">
+              <ShieldAlert className="w-3 h-3 text-amber-400" /> PROTOTYPE - NOT FOR CLINICAL USE
             </div>
           </div>
 
-          {/* Quick Links Column */}
-          <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-emerald-400 mb-4">
-              Quick Links
+          {/* Nav Links Col */}
+          <div className="md:col-span-3">
+            <h4 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider mb-4">
+              Navigation
             </h4>
-            <ul className="space-y-2.5 text-sm text-gray-400 font-medium">
-              <li><a href="#platform" className="hover:text-white transition-colors">Platform Capabilities</a></li>
-              <li><a href="#features" className="hover:text-white transition-colors">Rural Features</a></li>
-              <li><a href="#workflow" className="hover:text-white transition-colors">Diagnostic Workflow</a></li>
-              <li><a href="#validation" className="hover:text-white transition-colors">Clinical Validation</a></li>
-              <li><a href="#faq" className="hover:text-white transition-colors">FAQ & Compliance</a></li>
+            <ul className="space-y-2.5 text-xs text-slate-300 font-medium">
+              <li><a href="#platform" className="hover:text-emerald-400 transition-colors">Platform Overview</a></li>
+              <li><a href="#technology" className="hover:text-emerald-400 transition-colors">Computer Vision Stack</a></li>
+              <li><a href="#features" className="hover:text-emerald-400 transition-colors">Feature Grid</a></li>
+              <li><a href="#workflow" className="hover:text-emerald-400 transition-colors">Workflow Stepper</a></li>
+              <li><a href="#validation" className="hover:text-emerald-400 transition-colors">Clinical Validation</a></li>
+              <li><a href="#deployment" className="hover:text-emerald-400 transition-colors">Deployment Models</a></li>
             </ul>
           </div>
 
-          {/* Technology Column */}
-          <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-emerald-400 mb-4">
-              Technology
+          {/* Compliance & Contact Col */}
+          <div className="md:col-span-4">
+            <h4 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider mb-4">
+              Research & Innovation
             </h4>
-            <ul className="space-y-2.5 text-sm text-gray-400 font-medium">
-              <li><a href="#technology" className="hover:text-white transition-colors">Edge AI Inference</a></li>
-              <li><a href="#technology" className="hover:text-white transition-colors">Computer Vision Screening</a></li>
-              <li><a href="#technology" className="hover:text-white transition-colors">Multilingual Voice NLP</a></li>
-              <li><a href="#technology" className="hover:text-white transition-colors">ABDM & FHIR Security</a></li>
-              <li><a href="#technology" className="hover:text-white transition-colors">Predictive Epidemiology</a></li>
-            </ul>
-          </div>
-
-          {/* Contact & Office Column */}
-          <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-emerald-400 mb-4">
-              Contact & HQ
-            </h4>
-            <ul className="space-y-3 text-sm text-gray-400 font-normal">
-              <li className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-1" />
-                <span>HealthTech Innovation Hub, Cyber City, Gurugram, India</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Mail className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                <span>contact@arogyadrishti.ai</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                <span>+91 1800-AROGYA-AI</span>
-              </li>
-            </ul>
+            <p className="text-xs text-slate-400 leading-relaxed mb-4">
+              Developed as part of the healthcare innovation initiative at IIM Bangalore NSRCEL.
+            </p>
+            <div className="flex items-center gap-3 text-xs text-slate-400 font-mono">
+              <span className="flex items-center gap-1"><Lock className="w-3.5 h-3.5 text-emerald-400" /> AES-256</span>
+              <span>•</span>
+              <span>ISO 13485 Compliant Architecture</span>
+            </div>
           </div>
 
         </div>
 
-        {/* Bottom Copyright & Legal */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-4">
-          <div>
-            © {new Date().getFullYear()} Arogya Drishti Health Technologies Pvt. Ltd. All rights reserved.
-          </div>
-          <div className="flex items-center gap-6">
-            <a href="#" className="hover:text-gray-400 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-gray-400 transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-gray-400 transition-colors">Security & ABDM</a>
-          </div>
+        {/* Bottom Bar */}
+        <div className="pt-8 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+          <p>© 2026 Arogya Drishti Platform • IIM Bangalore Innovation Project</p>
+          <p className="flex items-center gap-1">
+            Engineered with care for neonatal health in India <Heart className="w-3.5 h-3.5 text-rose-500 fill-current" />
+          </p>
         </div>
 
       </div>

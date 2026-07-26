@@ -1,14 +1,26 @@
 'use client';
 
 import React, { useState } from 'react';
+import Navbar from '@/components/Navbar';
+import Hero from '@/components/Hero';
+import Platform from '@/components/Platform';
+import Features from '@/components/Features';
+import Workflow from '@/components/Workflow';
+import Technology from '@/components/Technology';
+import Validation from '@/components/Validation';
+import Deployment from '@/components/Deployment';
+import CtaSection from '@/components/CtaSection';
+import Footer from '@/components/Footer';
 import SafetyBanner from '@/components/SafetyBanner';
+
+// Hospital Portal Components
 import RoleSelector, { RoleType } from '@/components/RoleSelector';
 import OverviewDashboard, { BedData } from '@/components/OverviewDashboard';
 import DigitalBedManagement from '@/components/DigitalBedManagement';
 import LiveMonitoringView from '@/components/LiveMonitoringView';
 import ValidationCompliance from '@/components/ValidationCompliance';
 import ReportsAnalytics from '@/components/ReportsAnalytics';
-import { Activity, LayoutDashboard, Map, Eye, Award, FileText, HeartPulse, Building2 } from 'lucide-react';
+import { LayoutDashboard, Map, Eye, Award, FileText, HeartPulse, ArrowLeft } from 'lucide-react';
 
 const initialBedsData: BedData[] = [
   {
@@ -66,7 +78,10 @@ const initialBedsData: BedData[] = [
 ];
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'BED_MAP' | 'LIVE_MONITOR' | 'VALIDATION' | 'REPORTS'>('OVERVIEW');
+  const [viewMode, setViewMode] = useState<'LANDING' | 'PORTAL'>('LANDING');
+
+  // Hospital Portal State
+  const [portalTab, setPortalTab] = useState<'OVERVIEW' | 'BED_MAP' | 'LIVE_MONITOR' | 'VALIDATION' | 'REPORTS'>('OVERVIEW');
   const [currentRole, setCurrentRole] = useState<RoleType>('NICU Doctor');
   const [beds, setBeds] = useState<BedData[]>(initialBedsData);
   const [selectedBedId, setSelectedBedId] = useState<string>('BED-101');
@@ -75,129 +90,181 @@ export default function Home() {
 
   const handleLaunchBedMonitoring = (bedId: string) => {
     setSelectedBedId(bedId);
-    setActiveTab('LIVE_MONITOR');
+    setPortalTab('LIVE_MONITOR');
   };
 
-  return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-emerald-500 selection:text-white">
-      {/* Top Clinical Safety Banner */}
-      <SafetyBanner />
+  const scrollToContact = () => {
+    setViewMode('LANDING');
+    setTimeout(() => {
+      const el = document.getElementById('contact');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
 
-      {/* Main Header Navigation Bar */}
-      <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur border-b border-slate-800 px-4 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4 shadow-2xl">
-        {/* Brand Logo & Tagline */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-0.5 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-              <HeartPulse className="w-6 h-6 text-emerald-400 animate-pulse" />
+  if (viewMode === 'PORTAL') {
+    return (
+      <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-emerald-500 selection:text-white pb-20">
+        {/* Persistent Bottom Safety Banner */}
+        <SafetyBanner />
+
+        {/* Portal Header */}
+        <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur border-b border-slate-800 px-4 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4 shadow-2xl">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setViewMode('LANDING')}
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold flex items-center gap-1.5 transition-colors border border-slate-700"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Landing Page
+            </button>
+            <div className="h-6 w-[1px] bg-slate-800 hidden sm:block" />
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
+                <HeartPulse className="w-5 h-5 animate-pulse" />
+              </div>
+              <div>
+                <h1 className="text-sm font-black tracking-tight text-white flex items-center gap-2">
+                  AROGYA DRISHTI
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono uppercase">
+                    HOSPITAL PORTAL
+                  </span>
+                </h1>
+              </div>
             </div>
           </div>
-          <div>
-            <h1 className="text-lg font-black tracking-tight text-white flex items-center gap-2">
-              AROGYA DRISHTI
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono uppercase">
-                Neonatal AI
-              </span>
-            </h1>
-            <p className="text-[11px] text-slate-400 font-medium">Contactless rPPG Telemetry & Decision Support</p>
-          </div>
+
+          {/* Portal Navigation Menu */}
+          <nav className="flex flex-wrap items-center gap-1 bg-slate-950 p-1.5 rounded-2xl border border-slate-800">
+            <button
+              onClick={() => setPortalTab('OVERVIEW')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                portalTab === 'OVERVIEW'
+                  ? 'bg-emerald-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              }`}
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              Overview
+            </button>
+
+            <button
+              onClick={() => setPortalTab('BED_MAP')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                portalTab === 'BED_MAP'
+                  ? 'bg-emerald-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              }`}
+            >
+              <Map className="w-3.5 h-3.5" />
+              Bed Spatial Map
+            </button>
+
+            <button
+              onClick={() => setPortalTab('LIVE_MONITOR')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                portalTab === 'LIVE_MONITOR'
+                  ? 'bg-emerald-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              }`}
+            >
+              <Eye className="w-3.5 h-3.5 text-cyan-400" />
+              Live Telemetry
+            </button>
+
+            <button
+              onClick={() => setPortalTab('VALIDATION')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                portalTab === 'VALIDATION'
+                  ? 'bg-emerald-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              }`}
+            >
+              <Award className="w-3.5 h-3.5" />
+              Validation
+            </button>
+
+            <button
+              onClick={() => setPortalTab('REPORTS')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                portalTab === 'REPORTS'
+                  ? 'bg-emerald-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              Reports & Audits
+            </button>
+          </nav>
+        </header>
+
+        {/* Main Portal View */}
+        <div className="flex-1 p-4 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+          <RoleSelector currentRole={currentRole} onRoleChange={setCurrentRole} />
+
+          {portalTab === 'OVERVIEW' && (
+            <OverviewDashboard beds={beds} onSelectBed={handleLaunchBedMonitoring} userRole={currentRole} />
+          )}
+
+          {portalTab === 'BED_MAP' && (
+            <DigitalBedManagement beds={beds} onSelectBed={handleLaunchBedMonitoring} userRole={currentRole} />
+          )}
+
+          {portalTab === 'LIVE_MONITOR' && (
+            <LiveMonitoringView
+              bed={selectedBed}
+              onBack={() => setPortalTab('OVERVIEW')}
+              userRole={currentRole}
+            />
+          )}
+
+          {portalTab === 'VALIDATION' && <ValidationCompliance userRole={currentRole} />}
+
+          {portalTab === 'REPORTS' && <ReportsAnalytics userRole={currentRole} />}
         </div>
+      </main>
+    );
+  }
 
-        {/* Tab Navigation Menu */}
-        <nav className="flex flex-wrap items-center gap-1 bg-slate-950 p-1.5 rounded-2xl border border-slate-800">
-          <button
-            onClick={() => setActiveTab('OVERVIEW')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'OVERVIEW'
-                ? 'bg-emerald-600 text-white shadow-md'
-                : 'text-slate-400 hover:text-white hover:bg-slate-900'
-            }`}
-          >
-            <LayoutDashboard className="w-4 h-4" />
-            Overview
-          </button>
+  return (
+    <main className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-emerald-500 selection:text-white relative pb-20">
+      {/* Persistent Bottom Safety Banner */}
+      <SafetyBanner />
 
-          <button
-            onClick={() => setActiveTab('BED_MAP')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'BED_MAP'
-                ? 'bg-emerald-600 text-white shadow-md'
-                : 'text-slate-400 hover:text-white hover:bg-slate-900'
-            }`}
-          >
-            <Map className="w-4 h-4" />
-            Bed Spatial Map
-          </button>
+      {/* Top Header Navigation Bar */}
+      <Navbar
+        onOpenDemo={scrollToContact}
+        onOpenPortal={() => setViewMode('PORTAL')}
+      />
 
-          <button
-            onClick={() => setActiveTab('LIVE_MONITOR')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'LIVE_MONITOR'
-                ? 'bg-emerald-600 text-white shadow-md'
-                : 'text-slate-400 hover:text-white hover:bg-slate-900'
-            }`}
-          >
-            <Eye className="w-4 h-4 text-cyan-400" />
-            Live Telemetry
-          </button>
+      {/* Section 1: Hero Section */}
+      <Hero
+        onOpenDemo={scrollToContact}
+        onOpenPortal={() => setViewMode('PORTAL')}
+      />
 
-          <button
-            onClick={() => setActiveTab('VALIDATION')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'VALIDATION'
-                ? 'bg-emerald-600 text-white shadow-md'
-                : 'text-slate-400 hover:text-white hover:bg-slate-900'
-            }`}
-          >
-            <Award className="w-4 h-4" />
-            Validation
-          </button>
+      {/* Section 2: Problem vs. Solution Comparison */}
+      <Platform />
 
-          <button
-            onClick={() => setActiveTab('REPORTS')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'REPORTS'
-                ? 'bg-emerald-600 text-white shadow-md'
-                : 'text-slate-400 hover:text-white hover:bg-slate-900'
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            Reports & Audits
-          </button>
-        </nav>
-      </header>
+      {/* Section 3: Feature Grid */}
+      <Features />
 
-      {/* Main Content Area */}
-      <div className="flex-1 p-4 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
-        {/* Module 1: Role Selector Component */}
-        <RoleSelector currentRole={currentRole} onRoleChange={setCurrentRole} />
+      {/* Section 4: Workflow Stepper */}
+      <Workflow />
 
-        {/* Tab Views */}
-        {activeTab === 'OVERVIEW' && (
-          <OverviewDashboard beds={beds} onSelectBed={handleLaunchBedMonitoring} userRole={currentRole} />
-        )}
+      {/* Section 5: Technology Stack */}
+      <Technology />
 
-        {activeTab === 'BED_MAP' && (
-          <DigitalBedManagement beds={beds} onSelectBed={handleLaunchBedMonitoring} userRole={currentRole} />
-        )}
+      {/* Section 6: Clinical Validation */}
+      <Validation />
 
-        {activeTab === 'LIVE_MONITOR' && (
-          <LiveMonitoringView
-            bed={selectedBed}
-            onBack={() => setActiveTab('OVERVIEW')}
-            userRole={currentRole}
-          />
-        )}
+      {/* Section 7: Deployment Models */}
+      <Deployment />
 
-        {activeTab === 'VALIDATION' && <ValidationCompliance userRole={currentRole} />}
+      {/* Section 8: Demo Request Form */}
+      <CtaSection />
 
-        {activeTab === 'REPORTS' && <ReportsAnalytics userRole={currentRole} />}
-      </div>
-
-      {/* Clinical Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950 py-4 px-6 text-center text-xs text-slate-500">
-        <p>© 2026 Arogya Drishti Platform • Contactless Neonatal Monitoring System • IIM Bangalore Innovation Prototype</p>
-      </footer>
+      {/* Footer */}
+      <Footer />
     </main>
   );
 }

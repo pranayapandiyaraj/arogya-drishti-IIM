@@ -1,122 +1,106 @@
 'use client';
 
 import React from 'react';
+import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { 
-  Stethoscope, 
-  HeartHandshake, 
-  Baby, 
-  Scan, 
-  WifiOff, 
-  Mic, 
-  LayoutDashboard, 
-  FileText 
-} from 'lucide-react';
 
 export default function Platform() {
-  const cards = [
-    {
-      title: 'AI Disease Prediction',
-      description: 'Advanced machine learning models analyze vital signs and clinical symptoms to detect chronic & acute diseases early.',
-      icon: Stethoscope,
-      accent: 'emerald',
-    },
-    {
-      title: 'Maternal Care Assistant',
-      description: 'Tracks high-risk pregnancies, sends trimester alerts, and assists ANMs with automated risk stratification.',
-      icon: HeartHandshake,
-      accent: 'blue',
-    },
-    {
-      title: 'Child Health Monitoring',
-      description: 'Growth tracking, digital immunization cards, and early screening for pediatric nutritional deficiencies.',
-      icon: Baby,
-      accent: 'indigo',
-    },
-    {
-      title: 'Medical Image Analysis',
-      description: 'Edge-based computer vision for instant X-ray triage, skin lesion analysis, and diabetic retinopathy scans.',
-      icon: Scan,
-      accent: 'purple',
-    },
-    {
-      title: 'Offline AI Support',
-      description: 'Runs lightweight quantized AI models locally on tablets without requiring persistent internet connections.',
-      icon: WifiOff,
-      accent: 'teal',
-    },
-    {
-      title: 'Voice Assistant',
-      description: 'Multilingual conversational AI supporting local regional dialects for non-literate community health workers.',
-      icon: Mic,
-      accent: 'amber',
-    },
-    {
-      title: 'Hospital Dashboard',
-      description: 'Centralized telemetry command center for bed management, referral tracking, and ICU triage.',
-      icon: LayoutDashboard,
-      accent: 'cyan',
-    },
-    {
-      title: 'Government Scheme Guidance',
-      description: 'Automated eligibility matching for Ayushman Bharat (AB-PMJAY) and state healthcare subsidies.',
-      icon: FileText,
-      accent: 'rose',
-    },
+  const problems = [
+    'Adhesive sensors damage neonatal skin',
+    'Wires restrict positioning and kangaroo care',
+    'Alarms overwhelm nursing staff',
+    'Rural PHCs cannot afford enterprise monitors',
+  ];
+
+  const solutions = [
+    'Camera-only, zero-contact vitals via rPPG',
+    'Explainable AI risk score with clinician-ready summary',
+    'Alert prioritisation reduces false alarms',
+    'Runs on tablet + webcam for rural deployment',
   ];
 
   return (
-    <section id="platform" className="py-24 relative bg-white">
+    <section id="platform" className="py-20 bg-slate-50 border-b border-slate-200/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-4 border border-emerald-200">
-            Platform Overview
-          </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-navy-900 tracking-tight mb-4">
-            One Intelligent Platform.
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+            Traditional NICU monitoring is invasive, wired, and unreachable for rural India.
           </h2>
-          <p className="text-lg text-gray-600 font-normal leading-relaxed">
-            A comprehensive healthcare operating system built ground-up to bridge rural diagnostic gaps with cutting-edge artificial intelligence.
-          </p>
         </div>
 
-        {/* Feature Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {cards.map((card, idx) => {
-            const Icon = card.icon;
-            return (
-              <motion.div
-                key={card.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.05 }}
-                whileHover={{ scale: 1.03, y: -4 }}
-                className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-soft hover:shadow-xl hover:border-emerald-300 transition-all flex flex-col justify-between group"
-              >
-                <div>
-                  <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 text-navy-900 flex items-center justify-center mb-5 group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500 transition-all duration-300 shadow-sm">
-                    <Icon className="w-6 h-6 stroke-[2]" />
-                  </div>
-                  <h3 className="text-lg font-bold text-navy-900 mb-2.5 group-hover:text-emerald-600 transition-colors">
-                    {card.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed font-normal">
-                    {card.description}
-                  </p>
-                </div>
+        {/* Comparison 2-Column Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+          
+          {/* Left Column: TODAY (Red Accents) */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="bg-white rounded-2xl p-8 border border-red-200/80 shadow-md flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-red-100">
+                <span className="text-xs font-bold uppercase tracking-wider text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-200">
+                  TODAY
+                </span>
+                <span className="text-xs font-semibold text-slate-400">Traditional Monitors</span>
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-red-500" />
+                Invasive Wired Monitoring
+              </h3>
+              <ul className="space-y-4">
+                {problems.map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-3">
+                    <XCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                    <span className="text-sm font-medium text-slate-700">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-8 pt-4 border-t border-red-50 text-xs text-red-600 font-semibold">
+              High skin damage risk & high hardware cost barrier
+            </div>
+          </motion.div>
 
-                <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span>Explore capability</span>
-                  <span>→</span>
-                </div>
-              </motion.div>
-            );
-          })}
+          {/* Right Column: AROGYA DRISHTI (Green/Dark Card) */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="bg-slate-900 text-white rounded-2xl p-8 border border-slate-800 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/30">
+                  AROGYA DRISHTI
+                </span>
+                <span className="text-xs font-semibold text-slate-400">Next-Gen Vision AI</span>
+              </div>
+              <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                Contactless Computer Vision
+              </h3>
+              <ul className="space-y-4">
+                {solutions.map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                    <span className="text-sm font-medium text-slate-200">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-8 pt-4 border-t border-slate-800 text-xs text-emerald-400 font-semibold flex items-center justify-between">
+              <span>Zero skin contact • 100% Non-invasive</span>
+              <span className="font-mono text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300">10 Hz rPPG</span>
+            </div>
+          </motion.div>
+
         </div>
-
       </div>
     </section>
   );
