@@ -9,13 +9,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Arogya Drishti | AI Healthcare Platform for Rural Communities',
-  description: 'Arogya Drishti is an AI-powered healthcare platform enabling early disease prediction, maternal & child health monitoring, multilingual voice assistance, offline AI, and smart hospital integration.',
-  keywords: ['AI Healthcare', 'Rural Health', 'Disease Prediction', 'Maternal Health', 'Arogya Drishti', 'Telemedicine', 'India AI'],
+  title: 'Arogya Drishti | Contactless AI Neonatal Telemetry Platform',
+  description: 'AI-powered, contactless neonatal monitoring platform for NICUs, hospitals, and primary health centers. Live rPPG vitals estimation, XAI decision support, and digital bed management.',
+  keywords: ['Neonatal Monitoring', 'rPPG', 'NICU Telemetry', 'Arogya Drishti', 'Contactless Vitals', 'Explainable AI', 'Pediatric Health'],
   authors: [{ name: 'Arogya Drishti Team' }],
   openGraph: {
-    title: 'Arogya Drishti - Revolutionizing Rural Healthcare with AI',
-    description: 'AI-powered diagnostic and preventive healthcare platform designed for rural communities.',
+    title: 'Arogya Drishti - Contactless Neonatal Monitoring Platform',
+    description: 'Real-time contactless rPPG telemetry, XAI decision support, and digital NICU bed management.',
     url: 'https://arogyadrishti.ai',
     siteName: 'Arogya Drishti',
     type: 'website',
@@ -33,7 +33,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="bg-white text-navy-900 antialiased font-sans bg-grid-overlay min-h-screen selection:bg-emerald-500 selection:text-white">
+      <body className="bg-slate-950 text-slate-100 antialiased font-sans min-h-screen selection:bg-emerald-500 selection:text-white">
         {children}
       </body>
     </html>
