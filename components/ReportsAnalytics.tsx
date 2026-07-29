@@ -1,12 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Download, FileText, History, Calendar, Filter, CheckCircle2, ShieldCheck, Activity } from 'lucide-react';
+import { Download, FileText, History, Calendar, Filter, CheckCircle2, ShieldCheck, Activity, Loader2 } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import { RoleType } from './RoleSelector';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface ReportsAnalyticsProps {
   userRole: RoleType;
+  assignedBabyIds?: string[];
+  linkedBabyId?: string;
 }
 
 const mock24hHistory = [
@@ -27,35 +31,251 @@ const mockAuditLogs = [
   { id: 'LOG-106', timestamp: '2026-07-25 18:15:22', user: 'Dr. Vikram Seth', role: 'NICU Doctor', action: 'REPORT_EXPORT', details: 'Generated PDF Shift Handover Summary for NICU Wards A & B' }
 ];
 
-export default function ReportsAnalytics({ userRole }: ReportsAnalyticsProps) {
+const allBedSummary = [
+  { bed: 'BED-101', patient: 'Infant of Sharma', ward: 'NICU Ward A - High Risk', hr: '128.5 BPM', rr: '44.0 RPM', motion: '1.1', status: 'Normal' },
+  { bed: 'BED-102', patient: 'Baby Girl Patel', ward: 'NICU Ward A - High Risk', hr: '162.0 BPM', rr: '58.0 RPM', motion: '3.8', status: 'Caution' },
+  { bed: 'BED-103', patient: 'Twin A - Gupta', ward: 'NICU Ward B - Step-Down', hr: '92.0 BPM', rr: '22.0 RPM', motion: '0.2', status: 'Critical (Bradycardia)' },
+  { bed: 'BED-104', patient: 'Infant of Reddy', ward: 'NICU Ward B - Step-Down', hr: '134.0 BPM', rr: '40.0 RPM', motion: '1.0', status: 'Normal' },
+];
+
+export default function ReportsAnalytics({
+  userRole,
+  assignedBabyIds = ['BED-101', 'BED-103'],
+  linkedBabyId = 'BED-101'
+}: ReportsAnalyticsProps) {
   const [timeframe, setTimeframe] = useState<'24h' | '7d'>('24h');
   const [downloadSuccess, setDownloadSuccess] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleDownloadReport = (format: 'PDF' | 'CSV') => {
-    // Generate downloadable text content as synthetic medical report blob
-    const reportText = `AROGYA DRISHTI CLINICAL TELEMETRY SHIFT HANDOVER REPORT\n` +
-      `Generated: ${new Date().toLocaleString()}\n` +
-      `Format: ${format}\n` +
-      `Role: ${userRole}\n` +
-      `--------------------------------------------------\n` +
-      `NICU Ward A Occupancy: 100%\n` +
-      `Bed 101 (Infant of Sharma): HR 128 BPM | RR 44 RPM | Normal\n` +
-      `Bed 102 (Baby Girl Patel): HR 162 BPM | RR 58 RPM | Caution\n` +
-      `Bed 103 (Twin A - Gupta): HR 92 BPM | RR 22 RPM | Critical (Bradycardia)\n` +
-      `Bed 104 (Infant of Reddy): HR 134 BPM | RR 40 RPM | Normal\n` +
-      `--------------------------------------------------\n` +
-      `Safety Disclaimer: Arogya Drishti is a clinical decision-assist prototype and does not replace primary medical diagnostics.\n`;
+  let mockBedSummary = allBedSummary;
+  if (userRole === 'NICU Doctor') {
+    mockBedSummary = allBedSummary.filter(b => assignedBabyIds.includes(b.bed));
+  } else if (userRole === 'Parent / Guardian') {
+    mockBedSummary = allBedSummary.filter(b => b.bed === linkedBabyId);
+  }
 
-    const blob = new Blob([reportText], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Arogya_Drishti_NICU_Report_${format}_${Date.now()}.${format.toLowerCase()}`;
-    link.click();
-    URL.revokeObjectURL(url);
+  const handleDownloadReport = async (format: 'PDF' | 'CSV') => {
+    setIsGenerating(true);
+    try {
+      if (format === 'PDF') {
+        const doc = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4'
+        });
 
-    setDownloadSuccess(`Medical ${format} Shift Handover Report generated successfully!`);
-    setTimeout(() => setDownloadSuccess(null), 4000);
+        const timestampStr = new Date().toLocaleString();
+
+        // Banner Header
+        doc.setFillColor(15, 23, 42); // slate-900
+        doc.rect(0, 0, 210, 34, 'F');
+
+        // Title Accent Bar
+        doc.setFillColor(16, 185, 129); // emerald-500
+        doc.rect(0, 34, 210, 2, 'F');
+
+        // Brand Name & Subtitle
+        doc.setTextColor(16, 185, 129);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(16);
+        doc.text('AROGYA DRISHTI', 14, 15);
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('CONTACTLESS NEONATAL TELEMETRY & SHIFT HANDOVER REPORT', 14, 23);
+
+        doc.setTextColor(148, 163, 184); // slate-400
+        doc.setFontSize(8);
+        doc.text(`CONFIDENTIAL MEDICAL DOCUMENT | GENERATED: ${timestampStr}`, 14, 29);
+
+        // Metadata Info Grid
+        doc.setTextColor(15, 23, 42);
+        doc.setFontSize(9.5);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Report Metadata & Clinical Context', 14, 43);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.setTextColor(51, 65, 85);
+        doc.text(`Exported By Role: ${userRole}`, 14, 49);
+        doc.text('Ward Scope: NICU Wards A & B', 14, 54);
+        doc.text('Occupancy Rate: 100% (4 / 4 Active Beds)', 110, 49);
+        doc.text(`Telemetry Range: ${timeframe === '24h' ? 'Last 24 Hours' : 'Last 7 Days'}`, 110, 54);
+
+        // Divider
+        doc.setDrawColor(226, 232, 240);
+        doc.line(14, 58, 196, 58);
+
+        // Section 1: Live NICU Bed Telemetry Summary Table
+        doc.setTextColor(15, 23, 42);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.text('1. NICU Ward Bed Vital Telemetry Handover Summary', 14, 65);
+
+        autoTable(doc, {
+          startY: 68,
+          head: [['Bed ID', 'Patient Name', 'Ward Location', 'Heart Rate', 'Resp. Rate', 'Motion Index', 'Status']],
+          body: mockBedSummary.map(b => [
+            b.bed,
+            b.patient,
+            b.ward,
+            b.hr,
+            b.rr,
+            b.motion,
+            b.status
+          ]),
+          headStyles: {
+            fillColor: [13, 148, 136], // teal-600
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 8.5
+          },
+          bodyStyles: {
+            fontSize: 8,
+            textColor: [30, 41, 59]
+          },
+          alternateRowStyles: {
+            fillColor: [248, 250, 252]
+          },
+          margin: { left: 14, right: 14 }
+        });
+
+        // Section 2: 24-Hour Historical Vital Timeline Table
+        const afterBedTableY = (doc as any).lastAutoTable.finalY + 10;
+
+        doc.setTextColor(15, 23, 42);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.text('2. Historical 24-Hour Telemetry Timeline Data', 14, afterBedTableY);
+
+        autoTable(doc, {
+          startY: afterBedTableY + 3,
+          head: [['Time Slot', 'Heart Rate (BPM)', 'Respiratory Rate (RPM)', 'Motion Index', 'Clinical Note']],
+          body: mock24hHistory.map(h => [
+            h.time,
+            `${h.hr} BPM`,
+            `${h.rr} RPM`,
+            `${h.motion}`,
+            h.hr < 100 ? 'BRADYCARDIA ALERT DIP DETECTED' : 'Vitals Stable within normal range'
+          ]),
+          headStyles: {
+            fillColor: [30, 41, 59], // slate-800
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 8.5
+          },
+          bodyStyles: {
+            fontSize: 8,
+            textColor: [30, 41, 59]
+          },
+          alternateRowStyles: {
+            fillColor: [248, 250, 252]
+          },
+          margin: { left: 14, right: 14 }
+        });
+
+        // Section 3: Hospital Compliance Audit Logs Table
+        const afterHistoryY = (doc as any).lastAutoTable.finalY + 10;
+
+        doc.setTextColor(15, 23, 42);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.text('3. Hospital Compliance & Telemetry Audit Logs', 14, afterHistoryY);
+
+        autoTable(doc, {
+          startY: afterHistoryY + 3,
+          head: [['Log ID', 'Timestamp', 'User & Role', 'Action', 'Audit Details']],
+          body: mockAuditLogs.map(l => [
+            l.id,
+            l.timestamp,
+            `${l.user} (${l.role})`,
+            l.action,
+            l.details
+          ]),
+          headStyles: {
+            fillColor: [15, 23, 42],
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 8.5
+          },
+          bodyStyles: {
+            fontSize: 7.5,
+            textColor: [30, 41, 59]
+          },
+          alternateRowStyles: {
+            fillColor: [248, 250, 252]
+          },
+          margin: { left: 14, right: 14 }
+        });
+
+        // Regulatory & Safety Footer
+        const finalY = (doc as any).lastAutoTable.finalY + 12;
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const footerY = Math.max(finalY, pageHeight - 20);
+
+        doc.setDrawColor(203, 213, 225);
+        doc.line(14, footerY - 4, 196, footerY - 4);
+
+        doc.setFontSize(7.5);
+        doc.setTextColor(100, 116, 139);
+        doc.text(
+          'SAFETY & REGULATORY DISCLAIMER: Arogya Drishti contactless rPPG decision-assist system (ISO 14971 compliant design).',
+          14,
+          footerY
+        );
+        doc.text(
+          'This PDF document is auto-generated for shift handover summary and clinical documentation backup.',
+          14,
+          footerY + 4
+        );
+
+        // Save PDF file
+        doc.save(`Arogya_Drishti_NICU_Shift_Report_${Date.now()}.pdf`);
+        setDownloadSuccess(`Medical PDF Shift Handover Report generated successfully!`);
+      } else {
+        // CSV Export
+        const csvHeaders = ['Bed ID', 'Patient Name', 'Ward Location', 'Heart Rate BPM', 'Respiratory Rate RPM', 'Motion Index', 'Clinical Status'];
+        const csvRows = [
+          csvHeaders.join(','),
+          ...mockBedSummary.map(b => [
+            `"${b.bed}"`,
+            `"${b.patient}"`,
+            `"${b.ward}"`,
+            `"${b.hr}"`,
+            `"${b.rr}"`,
+            `"${b.motion}"`,
+            `"${b.status}"`
+          ].join(',')),
+          '',
+          'Audit Log ID,Timestamp,User,Role,Action,Details',
+          ...mockAuditLogs.map(l => [
+            `"${l.id}"`,
+            `"${l.timestamp}"`,
+            `"${l.user}"`,
+            `"${l.role}"`,
+            `"${l.action}"`,
+            `"${l.details.replace(/"/g, '""')}"`
+          ].join(','))
+        ];
+
+        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Arogya_Drishti_NICU_Telemetry_Dataset_${Date.now()}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
+
+        setDownloadSuccess(`Medical CSV Telemetry Dataset exported successfully!`);
+      }
+    } catch (err) {
+      console.error('Error generating report:', err);
+      setDownloadSuccess('Failed to generate report file. Please try again.');
+    } finally {
+      setIsGenerating(false);
+      setTimeout(() => setDownloadSuccess(null), 4000);
+    }
   };
 
   return (
@@ -67,22 +287,24 @@ export default function ReportsAnalytics({ userRole }: ReportsAnalyticsProps) {
             <FileText className="w-6 h-6 text-emerald-400" />
             Reports & Historical Telemetry Analytics
           </h2>
-          <p className="text-xs text-slate-400">24-hour / 7-day trend analysis, shift handover report generator, and audit trail</p>
+          <p className="text-xs text-slate-400">24-hour / 7-day trend analysis, shift handover PDF report generator, and audit trail</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => handleDownloadReport('CSV')}
-            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs flex items-center gap-2 transition-colors"
+            disabled={isGenerating}
+            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs flex items-center gap-2 transition-colors disabled:opacity-50"
           >
             <Download className="w-4 h-4 text-cyan-400" />
             Export CSV Dataset
           </button>
           <button
             onClick={() => handleDownloadReport('PDF')}
-            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 transition-colors shadow-lg"
+            disabled={isGenerating}
+            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 transition-colors shadow-lg disabled:opacity-50"
           >
-            <Download className="w-4 h-4 text-white" />
+            {isGenerating ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Download className="w-4 h-4 text-white" />}
             Generate PDF Shift Report
           </button>
         </div>

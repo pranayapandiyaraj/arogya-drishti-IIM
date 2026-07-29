@@ -11,6 +11,8 @@ interface LiveMonitoringViewProps {
   bed: BedData;
   onBack: () => void;
   userRole: RoleType;
+  assignedBabyIds?: string[];
+  linkedBabyId?: string;
 }
 
 interface WaveformPoint {
@@ -20,7 +22,47 @@ interface WaveformPoint {
   rr: number;
 }
 
-export default function LiveMonitoringView({ bed, onBack, userRole }: LiveMonitoringViewProps) {
+export default function LiveMonitoringView({
+  bed,
+  onBack,
+  userRole,
+  assignedBabyIds = ['BED-101', 'BED-103'],
+  linkedBabyId = 'BED-101'
+}: LiveMonitoringViewProps) {
+  // Check authorization
+  const isAuthorized =
+    userRole === 'Hospital Administrator' ||
+    userRole === 'NICU Nurse' ||
+    userRole === 'ASHA Worker' ||
+    (userRole === 'NICU Doctor' && (assignedBabyIds.includes(bed.bed_id) || assignedBabyIds.includes(bed.mrn))) ||
+    (userRole === 'Parent / Guardian' && (bed.bed_id === linkedBabyId || bed.mrn === linkedBabyId));
+
+  if (!isAuthorized) {
+    return (
+      <div className="bg-slate-900 border border-rose-500/50 rounded-3xl p-8 lg:p-12 text-center max-w-2xl mx-auto my-12 space-y-6 shadow-2xl">
+        <div className="w-16 h-16 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center mx-auto animate-bounce">
+          <ShieldAlert className="w-8 h-8" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-black text-white">Restricted Access — Patient Not Assigned</h2>
+          <p className="text-xs text-slate-300 leading-relaxed max-w-md mx-auto">
+            Under Arogya Drishti Role-Based Access Control (RBAC) &amp; patient isolation rules, you are only permitted to view telemetry streams for infants assigned to your care team.
+          </p>
+        </div>
+        <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs font-mono text-slate-400 space-y-1">
+          <div>Attempted Bed ID: <strong className="text-rose-400">{bed.bed_id} ({bed.patientName})</strong></div>
+          <div>Logged-in Staff Role: <strong className="text-emerald-400">{userRole}</strong></div>
+        </div>
+        <button
+          onClick={onBack}
+          className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-lg transition-all inline-flex items-center gap-2"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Return to Assigned Patients Directory
+        </button>
+      </div>
+    );
+  }
   const [dataPoints, setDataPoints] = useState<WaveformPoint[]>([]);
   const [currentHr, setCurrentHr] = useState<number>(bed.heartRate);
   const [currentRr, setCurrentRr] = useState<number>(bed.respiratoryRate);

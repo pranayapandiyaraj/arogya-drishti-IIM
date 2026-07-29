@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { UserCheck, Shield, Stethoscope, HeartPulse, Lock } from 'lucide-react';
+import { UserCheck, Shield, Stethoscope, HeartPulse, Lock, Users, Heart } from 'lucide-react';
 
-export type RoleType = 'NICU Doctor' | 'NICU Nurse' | 'Hospital Administrator' | 'Researcher/Auditor';
+export type RoleType = 'NICU Doctor' | 'NICU Nurse' | 'Hospital Administrator' | 'ASHA Worker' | 'Parent / Guardian';
 
 interface RoleSelectorProps {
   currentRole: RoleType;
@@ -26,20 +26,26 @@ const roles: { role: RoleType; icon: any; color: string; desc: string }[] = [
   {
     role: 'Hospital Administrator',
     icon: Shield,
-    color: 'border-cyan-500 bg-cyan-500/10 text-cyan-400',
-    desc: 'User management, audit logs, bed layout setup'
+    color: 'border-indigo-500 bg-indigo-500/10 text-indigo-400',
+    desc: 'User management, audit logs, onboarding queue'
   },
   {
-    role: 'Researcher/Auditor',
-    icon: Lock,
+    role: 'ASHA Worker',
+    icon: Users,
     color: 'border-amber-500 bg-amber-500/10 text-amber-400',
-    desc: 'Validation metadata & model benchmarks'
+    desc: 'Rural PHC field triage & tele-monitoring'
+  },
+  {
+    role: 'Parent / Guardian',
+    icon: Heart,
+    color: 'border-cyan-500 bg-cyan-500/10 text-cyan-400',
+    desc: 'Parental updates & continuous wellness scores'
   }
 ];
 
 export default function RoleSelector({ currentRole, onRoleChange }: RoleSelectorProps) {
   return (
-    <div className="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 mb-6 text-white shadow-xl">
+    <div className="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 text-white shadow-xl">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-3">
         <div className="flex items-center gap-2">
           <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
@@ -50,12 +56,12 @@ export default function RoleSelector({ currentRole, onRoleChange }: RoleSelector
               Role-Based Access Control (RBAC)
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">JWT Verified</span>
             </h2>
-            <p className="text-xs text-slate-400">Current Role: <strong className="text-emerald-400">{currentRole}</strong></p>
+            <p className="text-xs text-slate-400">Current Logged-in Staff: <strong className="text-emerald-400">{currentRole}</strong></p>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
         {roles.map((item) => {
           const Icon = item.icon;
           const isActive = currentRole === item.role;
@@ -70,10 +76,10 @@ export default function RoleSelector({ currentRole, onRoleChange }: RoleSelector
               }`}
             >
               <div className="flex items-center justify-between w-full mb-1">
-                <span className="text-xs font-bold">{item.role}</span>
-                <Icon className={`w-4 h-4 ${isActive ? 'text-emerald-400' : 'text-slate-500'}`} />
+                <span className="text-xs font-bold truncate">{item.role}</span>
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-emerald-400' : 'text-slate-500'}`} />
               </div>
-              <p className="text-[11px] opacity-80 leading-snug">{item.desc}</p>
+              <p className="text-[10px] opacity-80 leading-snug line-clamp-2">{item.desc}</p>
             </button>
           );
         })}

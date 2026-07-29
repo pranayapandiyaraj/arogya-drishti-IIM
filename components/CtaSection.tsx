@@ -4,7 +4,11 @@ import React, { useState } from 'react';
 import { Send, CheckCircle2, ShieldAlert, Building2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function CtaSection() {
+interface CtaSectionProps {
+  onAddDemoRequest?: (req: any) => void;
+}
+
+export default function CtaSection({ onAddDemoRequest }: CtaSectionProps) {
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     hospitalName: '',
@@ -23,6 +27,14 @@ export default function CtaSection() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
+    if (onAddDemoRequest) {
+      onAddDemoRequest({
+        id: `REQ-${Math.floor(100 + Math.random() * 900)}`,
+        timestamp: new Date().toLocaleString(),
+        ...formData,
+        status: 'PENDING'
+      });
+    }
   };
 
   return (
